@@ -1,4 +1,4 @@
-package com.tunepruner.voixt.editor.viewmodel
+package com.tunepruner.voixt.editor.domain
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.StandardTestDispatcher

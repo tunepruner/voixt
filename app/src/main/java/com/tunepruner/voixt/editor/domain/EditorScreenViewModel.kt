@@ -1,4 +1,4 @@
-package com.tunepruner.voixt.editor.viewmodel
+package com.tunepruner.voixt.editor.domain
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.*
