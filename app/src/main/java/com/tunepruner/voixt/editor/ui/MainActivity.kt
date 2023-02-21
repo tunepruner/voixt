@@ -10,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -59,8 +60,7 @@ fun Level(withSelection: Boolean) {
         modifier = Modifier
             .fillMaxWidth()
             .size(height = 110.dp, width = 0.dp)
-            .background(color = Color.DarkGray)
-            .padding(5.dp),
+            .background(color = Color(0x00000000))
     ) {
         AudioRow(withSelection = withSelection)
         TextRow(withSelection = withSelection)
@@ -73,7 +73,7 @@ fun TextRow(withSelection: Boolean) {
         modifier = Modifier
             .fillMaxWidth()
             .size(height = 50.dp, width = 0.dp)
-            .background(color = Color.Green)
+            .background(color = Color(0x00000000))
     ) {
         val strings: MutableState<List<String>> = mutableStateOf(ArrayList())
 
@@ -85,13 +85,14 @@ fun TextRow(withSelection: Boolean) {
                 modifier = Modifier
                     .padding(8.dp)
                     .clip(shape = RoundedCornerShape(15.dp))
-                    .background(color = Color.Gray)
+                    .background(color = MaterialTheme.colorScheme.primary)
             ) {
                 Text(
                     text = "$item ",
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .padding(vertical = 5.dp, horizontal = 10.dp)
+                        .padding(vertical = 5.dp, horizontal = 10.dp),
+                    color = MaterialTheme.colorScheme.onPrimary,
                 )
             }
         }
@@ -104,7 +105,7 @@ fun AudioRow(withSelection: Boolean) {
         modifier = Modifier
             .fillMaxWidth()
             .size(height = 50.dp, width = 0.dp)
-            .background(color = Color.Gray)
+            .background(color = MaterialTheme.colorScheme.secondary)
     ) {
 
     }
