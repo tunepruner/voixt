@@ -12,9 +12,7 @@ val DUMMY_TEXT = """
     in the future, we will find better text to display. 
 """.trimIndent()
 
-/** This is the source of truth for the current text body, both in
- * the full-viewing view state and the editing view state. */
-class RichWordDocumentViewModel : ViewModel() {
+class EditorScreenViewModel : ViewModel() {
     private val undoStack = ArrayDeque<WordEvent>()
     private val redoStack = ArrayDeque<WordEvent>()
 

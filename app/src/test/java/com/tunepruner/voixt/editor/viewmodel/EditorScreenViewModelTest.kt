@@ -9,8 +9,8 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class RichWordDocumentViewModelTest {
-    private val _sut = RichWordDocumentViewModel()
+internal class EditorScreenViewModelTest {
+    private val _sut = EditorScreenViewModel()
 
     @OptIn(DelicateCoroutinesApi::class)
     private val mainThreadSurrogate = newSingleThreadContext("UI thread")
