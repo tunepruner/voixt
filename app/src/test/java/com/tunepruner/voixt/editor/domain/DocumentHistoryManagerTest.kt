@@ -9,8 +9,8 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class EditorScreenViewModelTest {
-    private val _sut = EditorScreenViewModel()
+internal class DocumentHistoryManagerTest {
+    private val _sut = DocumentHistoryManager()
 
     @OptIn(DelicateCoroutinesApi::class)
     private val mainThreadSurrogate = newSingleThreadContext("UI thread")
@@ -187,7 +187,6 @@ internal class EditorScreenViewModelTest {
 
     @Test
     fun `Testing with concatenation 1`() = runTest {
-        val backup = _sut.backupTextBodyState
         _sut.initialize(arrayListOf())
         println("Initialized: " + _sut.backupTextBodyState.value.concatenateToOneString())
         println("Initialized: " + _sut.compileListFromEditStack().concatenateToOneString())
