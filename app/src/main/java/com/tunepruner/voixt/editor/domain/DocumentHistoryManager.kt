@@ -1,5 +1,7 @@
 package com.tunepruner.voixt.editor.domain
 
+import com.tunepruner.voixt.editor.model.DocumentEvent
+import com.tunepruner.voixt.editor.model.DocumentEventType
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -14,7 +16,7 @@ val DUMMY_TEXT = """
     in the future, we will find better text to display. 
 """.trimIndent()
 
-class DocumentHistoryManager {
+class DocumentHistoryManager(val editorController: EditorController) {
     private val undoStack = ArrayDeque<DocumentEvent>()
     private val redoStack = ArrayDeque<DocumentEvent>()
 
@@ -115,23 +117,4 @@ class DocumentHistoryManager {
             acc
         }
     }
-}
-
-fun List<String>.concatenateToOneString(): String {
-    val builder = StringBuilder()
-    return fold(builder) { acc, string ->
-        acc.append("$string ")
-    }.toString()
-}
-
-class DocumentEvent(
-    val documentEventType: DocumentEventType,
-    val affectedWords: List<String>,
-    val index: Int? = null,
-)
-
-enum class DocumentEventType {
-    ADD,
-    REMOVE,
-    INITIALIZE,
 }

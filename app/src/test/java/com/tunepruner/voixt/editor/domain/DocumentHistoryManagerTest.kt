@@ -1,5 +1,6 @@
 package com.tunepruner.voixt.editor.domain
 
+import com.tunepruner.voixt.editor.util.concatenateToOneString
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -10,7 +11,7 @@ import org.junit.Before
 import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class DocumentHistoryManagerTest {
-    private val _sut = DocumentHistoryManager()
+    private val _sut = DocumentHistoryManager(EditorController())
 
     @OptIn(DelicateCoroutinesApi::class)
     private val mainThreadSurrogate = newSingleThreadContext("UI thread")
