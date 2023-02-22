@@ -3,7 +3,7 @@ package com.tunepruner.voixt.editor.domain
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.*
 
-class EditorScreenViewModel : ViewModel() {
+class EditorScreenViewModel(editorController: EditorController) : ViewModel() {
     private val documentHistoryManager = DocumentHistoryManager()
     val documentEvents: SharedFlow<DocumentEvent> = documentHistoryManager.documentEvents
 
