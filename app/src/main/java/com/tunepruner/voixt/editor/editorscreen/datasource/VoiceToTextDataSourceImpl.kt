@@ -1,4 +1,4 @@
-package com.tunepruner.voixt.editor.datasource
+package com.tunepruner.voixt.editor.editorscreen.datasource
 
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow

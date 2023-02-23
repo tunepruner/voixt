@@ -1,5 +1,8 @@
 package com.tunepruner.voixt.editor.domain
 
+import com.tunepruner.voixt.editor.editorscreen.domain.DUMMY_TEXT
+import com.tunepruner.voixt.editor.editorscreen.domain.DocumentHistoryManager
+import com.tunepruner.voixt.editor.editorscreen.domain.EditorController
 import com.tunepruner.voixt.editor.util.concatenateToOneString
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.StandardTestDispatcher

@@ -1,7 +1,7 @@
-package com.tunepruner.voixt.editor.domain
+package com.tunepruner.voixt.editor.editorscreen.domain
 
 import androidx.lifecycle.ViewModel
-import com.tunepruner.voixt.editor.model.DocumentEvent
+import com.tunepruner.voixt.editor.editorscreen.model.DocumentEvent
 import kotlinx.coroutines.flow.*
 
 class EditorScreenViewModel(editorController: EditorController) : ViewModel() {

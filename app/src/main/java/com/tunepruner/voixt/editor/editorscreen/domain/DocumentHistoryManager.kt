@@ -1,7 +1,7 @@
-package com.tunepruner.voixt.editor.domain
+package com.tunepruner.voixt.editor.editorscreen.domain
 
-import com.tunepruner.voixt.editor.model.DocumentEvent
-import com.tunepruner.voixt.editor.model.DocumentEventType
+import com.tunepruner.voixt.editor.editorscreen.model.DocumentEvent
+import com.tunepruner.voixt.editor.editorscreen.model.DocumentEventType
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow

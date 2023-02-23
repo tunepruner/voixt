@@ -1,6 +1,6 @@
-package com.tunepruner.voixt.editor.repository
+package com.tunepruner.voixt.editor.editorscreen.repository
 
-import com.tunepruner.voixt.editor.datasource.VoiceToTextDataSourceImpl
+import com.tunepruner.voixt.editor.editorscreen.datasource.VoiceToTextDataSourceImpl
 import kotlinx.coroutines.flow.SharedFlow
 
 class DocumentRepository {
