@@ -1,4 +1,4 @@
-package com.tunepruner.voixt.editor.editorscreen.domain
+package com.tunepruner.voixt.editor.util
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp

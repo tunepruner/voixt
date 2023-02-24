@@ -1,14 +1,14 @@
-package com.tunepruner.voixt.editor.editorscreen.domain
+package com.tunepruner.voixt.editor.selectionscreen.domain
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tunepruner.voixt.editor.selectionscreen.repository.SelectionScreenRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 typealias SelectionState = Pair<Int, Int>
 
-class SelectionScreenViewModel() : ViewModel() {
-
+class SelectionScreenViewModel(val repository: SelectionScreenRepository) : ViewModel() {
     private val _selectionState = MutableStateFlow<SelectionState?>(null)
     val selectionState = _selectionState
 
