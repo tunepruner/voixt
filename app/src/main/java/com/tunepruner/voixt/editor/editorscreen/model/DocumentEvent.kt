@@ -18,12 +18,11 @@ class DocumentEventTransitional(
         other as DocumentEventTransitional
 
         if (documentEventType != other.documentEventType) return false
+        if (index != other.index) return false
         if (affectedWords.size != other.affectedWords.size) return false
         affectedWords.forEachIndexed { index, domainString ->
             if (!domainString.string.contentEquals(other.affectedWords[index].string)) return false
         }
-        if (index != other.index) return false
-
         return true
     }
 }
