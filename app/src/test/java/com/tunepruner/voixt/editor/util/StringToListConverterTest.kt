@@ -1,7 +1,6 @@
 package com.tunepruner.voixt.editor.util
 
 import org.junit.Test
-import org.junit.jupiter.api.assertThrows
 
 internal class StringToListConverterTest {
     val _sut = StringToListConverter()
@@ -22,10 +21,10 @@ internal class StringToListConverterTest {
     fun `never returns a special character in same string as letter character`() {
         for (string in sampleSentences) {
             val list = _sut.convert(string)
-            list.forEach {
+            list.forEach { myString ->
                 var hasLetter = false
                 var hasSpecialChar = false
-                it.forEach { char ->
+                myString.forEach { char ->
                     if (char.isLetter()) {
                         hasLetter = true
                     } else {
@@ -33,10 +32,7 @@ internal class StringToListConverterTest {
                     }
                 }
                 println(
-                    """
-                        The string is : $string
-                        The result is : ${!(hasSpecialChar && hasLetter)}
-                    """.trimIndent()
+                    " The string is : ${myString} \nThe result is : ${!(hasSpecialChar && hasLetter)}"
                 )
                 assert(
                     !(hasSpecialChar && hasLetter)
@@ -63,7 +59,7 @@ val sampleSentences = listOf(
             This is a sentence.
         """.trimIndent(),
     """
-            $! @#sdfas 09823 fsdn as098%$^# $(Y&* ^{}:">23fj sd 230 dfs jl k320sd flkj
+            $! @#sdfas 09823 fsdn as098%$^# $(Y&* ^{}:">23fj sd 230 dfs jl k320sd flkj 234580dfg dfsgjlk34 f40fer s --sasdf-sadf-sadf-f sdflkj*sdflkj*sdflkj8sdfu8^sdfjkh
         """.trimIndent(),
     """
             THIS SENTENCE IS IN ALL CAPS.
@@ -98,5 +94,5 @@ val sampleSentences = listOf(
     """
             Ummmm...ellipsis!
         """.trimIndent(),
-    "A string with\n a line break"
+    "A string \nwith\n line bre\naks \n* &\n *\n&"
 )
