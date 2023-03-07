@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.dp
 
 /** This is the top level Composable of the ControlPanel, which is
  * home to all the recording controls and format buttons.*/
-@Preview
 @Composable
 fun ControlPanel(withSelection: Boolean) {
     Column(
