@@ -4,4 +4,5 @@
     <string name="saved_voixts_screen">Saved voixts</string>
     <string name="archived_voixts_screen">Archived voixts</string>
     <string name="voixt_drafts_screen">Voixt drafts</string>
+    <string name="home_screen_content_description">Home screen</string>
 </resources>
