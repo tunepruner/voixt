@@ -11,7 +11,6 @@ import com.tunepruner.voixt.ui.HomeScreen
 
 @Composable
 fun Navigation() {
-
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screen.HomeScreen.route) {
         composable(route = Screen.HomeScreen.route) {
@@ -24,10 +23,4 @@ fun Navigation() {
 //            EditScreen(true, navController)
 //        }
     }
-}
-
-@Preview
-@Composable
-fun NavPreview() {
-    Navigation()
 }

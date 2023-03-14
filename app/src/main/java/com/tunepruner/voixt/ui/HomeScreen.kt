@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.tunepruner.voixt.Navigation
 import com.tunepruner.voixt.Screen
 import com.tunepruner.voixt.ui.theme.VoixtTheme
@@ -30,7 +31,8 @@ val gradientColorForButtons = Brush.verticalGradient(
 @Composable
 fun HomeScreenPreview() {
     VoixtTheme {
-        Navigation()
+        val navController = rememberNavController()
+        HomeScreen(navController)
     }
 }
 
