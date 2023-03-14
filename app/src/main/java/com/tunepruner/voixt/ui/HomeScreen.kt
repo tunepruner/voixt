@@ -11,6 +11,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.tunepruner.voixt.Navigation
+import com.tunepruner.voixt.Screen
 import com.tunepruner.voixt.ui.theme.VoixtTheme
 
 val paddingBetweenRowsAndButtons = 2.dp
@@ -27,13 +30,13 @@ val gradientColorForButtons = Brush.verticalGradient(
 @Composable
 fun HomeScreenPreview() {
     VoixtTheme {
-        HomeScreen()
+        Navigation()
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavController) {
     Scaffold(topBar = { TopBar() }, content = {
         Surface(
             modifier = Modifier
@@ -41,7 +44,7 @@ fun HomeScreen() {
                 .padding(it),
             color = MaterialTheme.colorScheme.background,
         ) {
-            HomeScreenNavigationButtonsArea()
+            HomeScreenNavigationButtonsArea(navController = navController)
         }
     })
 }
@@ -58,31 +61,47 @@ fun TopBar() {
 }
 
 @Composable
-fun HomeScreenNavigationButtonsArea() {
+fun HomeScreenNavigationButtonsArea(navController: NavController) {
     Column(modifier = Modifier.padding(paddingBetweenRowsAndButtons)) {
-        HomeScreenSingleButtonRow(modifier = Modifier.weight(1f))
-        HomeScreenSingleButtonRow(modifier = Modifier.weight(1f))
-        HomeScreenTwoButtonRow(modifier = Modifier.weight(1f))
+        HomeScreenSingleButtonRow(modifier = Modifier.weight(1f), navController = navController, navToUri = Screen.EditorScreen.route)
+        HomeScreenSingleButtonRow(modifier = Modifier.weight(1f), navController = navController, navToUri = Screen.SavedVoixts.route)
+        HomeScreenTwoButtonRow(modifier = Modifier.weight(1f), navController = navController)
     }
 }
 
 @Composable
-fun ColumnScope.HomeScreenSingleButtonRow(modifier: Modifier = Modifier) {
+fun ColumnScope.HomeScreenSingleButtonRow(
+    modifier: Modifier = Modifier, navController: NavController, navToUri: String
+) {
     Row(modifier = modifier) {
-        HomeScreenNavigationButton(modifier = Modifier.weight(1f))
+        HomeScreenNavigationButton(modifier = Modifier.weight(1f), navController = navController, navToUri = navToUri)
     }
 }
 
-
 @Composable
-fun ColumnScope.HomeScreenTwoButtonRow(modifier: Modifier = Modifier) {
+fun ColumnScope.HomeScreenTwoButtonRow(
+    modifier: Modifier = Modifier, navController: NavController
+) {
     Row(modifier = modifier) {
-        repeat(2) { HomeScreenNavigationButton(modifier = Modifier.weight(1f)) }
+        HomeScreenNavigationButton(
+            modifier = Modifier.weight(1f),
+            navController = navController,
+            navToUri = Screen.VoixtDrafts.route
+        )
+        HomeScreenNavigationButton(
+            modifier = Modifier.weight(1f),
+            navController = navController,
+            navToUri = Screen.ArchivedVoixts.route
+        )
     }
 }
 
 @Composable
-fun RowScope.HomeScreenNavigationButton(modifier: Modifier = Modifier) {
+fun RowScope.HomeScreenNavigationButton(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    navToUri: String,
+) {
     Button(
         modifier = modifier
             .weight(1f)
@@ -90,14 +109,13 @@ fun RowScope.HomeScreenNavigationButton(modifier: Modifier = Modifier) {
             .padding(paddingBetweenRowsAndButtons)
             .background(shape = buttonShape, brush = gradientColorForButtons),
         onClick = {
-            println("clicked")
+            navController.navigate(navToUri)
         },
         shape = buttonShape,
         colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
     ) {
         Text(
-            text = "My button",
-            modifier = Modifier
+            text = "My button", modifier = Modifier
                 .fillMaxSize()
                 .wrapContentSize()
         )

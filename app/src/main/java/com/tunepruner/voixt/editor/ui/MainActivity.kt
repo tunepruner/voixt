@@ -22,6 +22,7 @@ import com.tunepruner.voixt.ui.theme.VoixtTheme
 import androidx.compose.material3.*
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
+import com.tunepruner.voixt.Navigation
 import com.tunepruner.voixt.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -31,7 +32,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             VoixtTheme {
-                MainScreen(true)
+                Navigation()
+//                MainScreen(true)
             }
         }
     }
@@ -40,75 +42,75 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun DefaultPreview() {
         VoixtTheme {
-            MainScreen(false)
+//            MainScreen(false)
         }
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun MainScreen(withSelection: Boolean) {
-        val drawerState = rememberDrawerState(DrawerValue.Closed)
-        val scope = rememberCoroutineScope()
-
-        ModalNavigationDrawer(
-            drawerState = drawerState,
-            drawerContent = {
-                ModalDrawerSheet(
-//                    drawerShape = …,
-//                drawerTonalElevation = …,
-//                drawerContainerColor = …,
-//                drawerContentColor = …,
-                    content = {
-                        Column(modifier = Modifier.padding(40.dp)) {
-                            Text(
-                                stringResource(id = R.string.app_name),
-                                fontSize = 50.sp,
-//                                modifier = Modifier.padding(start = 20.dp)
-                            )
-                            Spacer(modifier = Modifier.size(30.dp))
-                            Button(onClick = {}, content = {
-                                Icon(
-                                    Icons.Default.Home, "Settings button"
-                                )
-                                Text("Home")
-                            })
-                            Button(onClick = {}, content = {
-                                Icon(
-                                    Icons.Default.List, "Settings button"
-                                )
-                                Text("Saved voixts")
-                            })
-                            Button(onClick = {}, content = {
-                                Icon(
-                                    Icons.Default.Settings, "Settings button"
-                                )
-                                Text("Settings")
-                            })
-                        }
-                    }
-                )
-            },
-            gesturesEnabled = true,
-//         scrimColor = MaterialTheme.colorScheme.scrim,
-            content = {
-                Scaffold(
-                    content = {
-                        Surface(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(it),
-                            color = MaterialTheme.colorScheme.background,
-                        ) {
-                            Column {
-                                TopBar(drawerState)
-                                EditScreen(true)
-                            }
-                        }
-                    }
-                )
-            }
-        )
-    }
+//    @OptIn(ExperimentalMaterial3Api::class)
+//    @Composable
+//    fun MainScreen(withSelection: Boolean) {
+//        val drawerState = rememberDrawerState(DrawerValue.Closed)
+//        val scope = rememberCoroutineScope()
+//
+//        ModalNavigationDrawer(
+//            drawerState = drawerState,
+//            drawerContent = {
+//                ModalDrawerSheet(
+////                    drawerShape = …,
+////                drawerTonalElevation = …,
+////                drawerContainerColor = …,
+////                drawerContentColor = …,
+//                    content = {
+//                        Column(modifier = Modifier.padding(40.dp)) {
+//                            Text(
+//                                stringResource(id = R.string.app_name),
+//                                fontSize = 50.sp,
+////                                modifier = Modifier.padding(start = 20.dp)
+//                            )
+//                            Spacer(modifier = Modifier.size(30.dp))
+//                            Button(onClick = {}, content = {
+//                                Icon(
+//                                    Icons.Default.Home, "Settings button"
+//                                )
+//                                Text("Home")
+//                            })
+//                            Button(onClick = {}, content = {
+//                                Icon(
+//                                    Icons.Default.List, "Settings button"
+//                                )
+//                                Text("Saved voixts")
+//                            })
+//                            Button(onClick = {}, content = {
+//                                Icon(
+//                                    Icons.Default.Settings, "Settings button"
+//                                )
+//                                Text("Settings")
+//                            })
+//                        }
+//                    }
+//                )
+//            },
+//            gesturesEnabled = true,
+////         scrimColor = MaterialTheme.colorScheme.scrim,
+//            content = {
+//                Scaffold(
+//                    content = {
+//                        Surface(
+//                            modifier = Modifier
+//                                .fillMaxSize()
+//                                .padding(it),
+//                            color = MaterialTheme.colorScheme.background,
+//                        ) {
+//                            Column {
+//                                TopBar(drawerState)
+//                                EditScreen(true)
+//                            }
+//                        }
+//                    }
+//                )
+//            }
+//        )
+//    }
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -187,74 +189,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @Composable
-    fun EditScreen(withSelection: Boolean) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            Level(withSelection)
-            ControlPanel(withSelection)
-            Level(withSelection)
-        }
-    }
-
-    @Composable
-    fun Level(withSelection: Boolean) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .size(height = 110.dp, width = 0.dp)
-                .background(color = Color(0x00000000))
-        ) {
-            AudioRow(withSelection = withSelection)
-            TextRow(withSelection = withSelection)
-        }
-    }
-
-    @SuppressLint("UnrememberedMutableState")
-    @Composable
-    fun TextRow(withSelection: Boolean) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .size(height = 50.dp, width = 0.dp)
-                .background(color = Color(0x00000000))
-        ) {
-            val strings: MutableState<List<String>> = mutableStateOf(ArrayList())
-
-            strings.value =
-                strings.value.plus(arrayListOf("These", "are", "the", "initial", "strings!"))
-
-            for (item in strings.value) {
-                Box(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .clip(shape = RoundedCornerShape(15.dp))
-                        .background(color = MaterialTheme.colorScheme.primary)
-                ) {
-                    Text(
-                        text = "$item ",
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .padding(vertical = 5.dp, horizontal = 10.dp),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                    )
-                }
-            }
-        }
-    }
-
-    @Composable
-    fun AudioRow(withSelection: Boolean) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .size(height = 50.dp, width = 0.dp)
-                .background(color = MaterialTheme.colorScheme.secondary)
-        ) {
-
-        }
-    }
 }
