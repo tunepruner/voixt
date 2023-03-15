@@ -18,10 +18,10 @@ import androidx.navigation.NavController
 
 
 @Composable
-fun EditScreen(withSelection: Boolean, navController: NavController) {
+fun EditScreen(withSelection: Boolean, navController: NavController, modifier: Modifier = Modifier) {
     Column(
         verticalArrangement = Arrangement.spacedBy(10.dp),
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
     ) {
         Level(withSelection)
