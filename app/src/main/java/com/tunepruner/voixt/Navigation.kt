@@ -1,6 +1,5 @@
 package com.tunepruner.voixt
 
-import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -21,8 +20,6 @@ import com.tunepruner.voixt.editor.voixtlist.VoixtListScreen
 import com.tunepruner.voixt.editor.voixtlist.VoixtListType
 import com.tunepruner.voixt.ui.HomeScreen
 import com.tunepruner.voixt.ui.TopBar
-
-const val TAG = "12345"
 
 val targetTopBarHeights = mapOf(
     Screen.HomeScreen to 200.dp,
@@ -57,111 +54,70 @@ fun Navigation(
     navState: Pair<Screen?, Screen?>,
     setNavStateTo: (Screen) -> Unit
 ) {
-    Log.d("12345", "Navigation() called")
-
-
     val currentTopBarHeight = getAnimatedTopBarHeight(navState)
     val currentTopBarIconSize = getAnimatedTopBarIconSize(navState)
     val currentTopBarTextSize = getAnimatedTopBarTextSize(navState)
 
-    NavHost(navController = navController, startDestination = Screen.HomeScreen.route) {
-        composable(route = Screen.HomeScreen.route) {
-            Scaffold(topBar = {
-                MyAnimatedVisibility(visible = navState.second is Screen.HomeScreen, content = {
-                    TopBar(
-                        screen = navState.second ?: Screen.HomeScreen,
-                        currentHeight = currentTopBarHeight,
-                        currentIconSize = currentTopBarIconSize,
-                        currentTextSize = currentTopBarTextSize.sp
-                    )
-                })
-            }, content = {
+    Scaffold(topBar = {
+        TopBar(
+            screen = navState.second ?: Screen.HomeScreen,
+            currentHeight = currentTopBarHeight,
+            currentIconSize = currentTopBarIconSize,
+            currentTextSize = currentTopBarTextSize.sp
+        )
+    }, content = { padding ->
+        NavHost(navController = navController, startDestination = Screen.HomeScreen.route) {
+            composable(route = Screen.HomeScreen.route) {
                 LaunchedEffect(key1 = true, block = {
                     setNavStateTo(Screen.HomeScreen)
                 })
-                MyAnimatedVisibility(visible = navState.second is Screen.HomeScreen, content = {
-                    HomeScreen(navController = navController, modifier = Modifier.padding(it))
-                })
-            })
-        }
-        composable(route = Screen.EditorScreen.route) {
-            Scaffold(topBar = {
-                MyAnimatedVisibility(visible = navState.second is Screen.EditorScreen, content = {
-                    TopBar(
-                        screen = navState.second ?: Screen.EditorScreen,
-                        currentHeight = currentTopBarHeight,
-                        currentIconSize = currentTopBarIconSize,
-                        currentTextSize = currentTopBarTextSize.sp
-                    )
-                })
-            }, content = {
+                HomeScreen(
+                    navController = navController, modifier = Modifier.padding(padding)
+                )
+            }
+            composable(route = Screen.EditorScreen.route) {
                 LaunchedEffect(key1 = true, block = {
                     setNavStateTo(Screen.EditorScreen)
                 })
-                MyAnimatedVisibility(visible = navState.second is Screen.EditorScreen, content = {
-                    EditScreen(
-                        false,
-                        navController = navController,
-                        modifier = Modifier.padding(it)
-                    )
-                })
-            })
-        }
-        composable(route = Screen.SavedVoixts.route) {
-            Scaffold(topBar = {
-                TopBar(
-                    screen = navState.second ?: Screen.HomeScreen,
-                    currentHeight = currentTopBarHeight,
-                    currentIconSize = currentTopBarIconSize,
-                    currentTextSize = currentTopBarTextSize.sp
+                EditScreen(
+                    withSelection = false,
+                    navController = navController,
+                    modifier = Modifier.padding(padding)
                 )
-            }, content = {
+            }
+            composable(route = Screen.SavedVoixts.route) {
                 LaunchedEffect(key1 = true, block = {
                     setNavStateTo(Screen.SavedVoixts)
                 })
                 VoixtListScreen(
                     navController = navController,
                     type = VoixtListType.SavedVoixts,
-                    modifier = Modifier.padding(it)
+                    modifier = Modifier.padding(padding)
+
                 )
-            })
-        }
-        composable(route = Screen.VoixtDrafts.route) {
-            Scaffold(topBar = {
-                TopBar(
-                    screen = navState.second ?: Screen.HomeScreen,
-                    currentHeight = currentTopBarHeight,
-                    currentIconSize = currentTopBarIconSize,
-                    currentTextSize = currentTopBarTextSize.sp
-                )
-            }, content = {
+            }
+            composable(route = Screen.VoixtDrafts.route) {
                 LaunchedEffect(key1 = true, block = {
                     setNavStateTo(Screen.VoixtDrafts)
-
                 })
                 VoixtListScreen(
-                    navController, type = VoixtListType.VoixtDrafts, Modifier.padding(it)
+                    navController = navController,
+                    type = VoixtListType.VoixtDrafts,
+                    modifier = Modifier.padding(padding)
                 )
-            })
-        }
-        composable(route = Screen.ArchivedVoixts.route) {
-            Scaffold(topBar = {
-                TopBar(
-                    screen = navState.second ?: Screen.HomeScreen,
-                    currentHeight = currentTopBarHeight,
-                    currentIconSize = currentTopBarIconSize,
-                    currentTextSize = currentTopBarTextSize.sp
-                )
-            }, content = {
+            }
+            composable(route = Screen.ArchivedVoixts.route) {
                 LaunchedEffect(key1 = true, block = {
                     setNavStateTo(Screen.ArchivedVoixts)
                 })
                 VoixtListScreen(
-                    navController, type = VoixtListType.ArchivedVoixts, Modifier.padding(it)
+                    navController = navController,
+                    type = VoixtListType.ArchivedVoixts,
+                    modifier = Modifier.padding(padding)
                 )
-            })
+            }
         }
-    }
+    })
 }
 
 @Composable
