@@ -1,29 +1,26 @@
 package com.tunepruner.voixt.editor.ui
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tunepruner.voixt.ui.theme.VoixtTheme
 import androidx.compose.material3.*
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import com.tunepruner.voixt.Navigation
 import com.tunepruner.voixt.R
+import com.tunepruner.voixt.Screen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -32,8 +29,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             VoixtTheme {
-                Navigation()
-//                MainScreen(true)
+                val navController = rememberNavController()
+
+                var navState by remember {
+                    mutableStateOf<Pair<Screen?, Screen?>>(null to Screen.HomeScreen)
+                }
+
+                val setState: (Screen) -> Unit = { screen -> navState = navState.second to screen }
+                Navigation(navController = navController, navState = navState, setNavStateTo = setState)
             }
         }
     }

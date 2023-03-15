@@ -40,55 +40,79 @@ val gradientColorForButtons = Brush.verticalGradient(
 fun HomeScreenPreview() {
     VoixtTheme {
         val navController = rememberNavController()
-        HomeScreen(navController)
+        HomeScreen(navController = navController)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController) {
-    Scaffold(topBar = { TopBar() }, content = {
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it),
-            color = MaterialTheme.colorScheme.background,
-        ) {
-            HomeScreenNavigationButtonsArea(navController = navController)
-        }
-    })
+fun HomeScreen(modifier: Modifier = Modifier, navController: NavController) {
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background,
+    ) {
+        HomeScreenNavigationButtonsArea(navController = navController)
+    }
 }
 
 @Composable
-fun TopBar() {
+fun TopBar(
+    screen: Screen = Screen.HomeScreen,
+    currentIconSize: Float,
+    currentTextSize: TextUnit,
+    currentHeight: Float
+) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
+            .height(currentHeight.dp)
     ) {
-        Row/*(modifier = Modifier.padding(20.dp))*/ {
-            Spacer(modifier = Modifier.weight(1f))
+        Row {
+            if (screen is Screen.HomeScreen) Spacer(modifier = Modifier.weight(1f))
+            val iconModifier = Modifier
             Image(
                 painter = painterResource(id = R.drawable.home_icon),
                 contentDescription = stringResource(R.string.home_screen_content_description),
-                modifier = Modifier
-                    .wrapContentSize()
-                    .size(80.dp)
-                    .align(Alignment.CenterVertically)
-                    .weight(1.5f)
+                modifier = iconModifier.then(
+                    when (screen) {
+                        Screen.HomeScreen -> iconModifier
+                            .wrapContentSize()
+                            .size(currentIconSize.dp)
+                            .weight(1.5f)
+                            .align(Alignment.CenterVertically)
+                        Screen.EditorScreen -> iconModifier
+                            .padding(10.dp)
+                        else -> iconModifier
+                            .align(Alignment.CenterVertically)
+                            .padding(10.dp)
+                    }
+                ),
             )
+            val textModifier = Modifier
             Text(
                 text = stringResource(id = R.string.app_name),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .wrapContentSize()
-                    .weight(3f)
-                    .align(Alignment.CenterVertically),
+                modifier = textModifier.then(
+                    when (screen) {
+                        Screen.HomeScreen ->
+                            textModifier
+                                .fillMaxSize()
+                                .wrapContentSize()
+                                .weight(3f)
+                                .align(Alignment.CenterVertically)
+                        Screen.EditorScreen ->
+                            textModifier
+                                .padding(10.dp)
+                        else -> textModifier
+                            .padding(10.dp)
+                            .align(Alignment.CenterVertically)
+
+                    }
+                ),
                 textAlign = TextAlign.Left,
-                fontSize = 70.sp,
+                fontSize = currentTextSize,
                 fontWeight = FontWeight(400)
             )
-            Spacer(modifier = Modifier.weight(1f))
+            if (screen is Screen.HomeScreen) Spacer(modifier = Modifier.weight(1f))
         }
     }
 }
