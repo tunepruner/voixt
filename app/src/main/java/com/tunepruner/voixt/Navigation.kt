@@ -15,7 +15,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 
-import com.tunepruner.voixt.editor.ui.EditScreen
+import com.tunepruner.voixt.editor.ui.EditorScreen
 import com.tunepruner.voixt.editor.voixtlist.VoixtListScreen
 import com.tunepruner.voixt.editor.voixtlist.VoixtListType
 import com.tunepruner.voixt.ui.HomeScreen
@@ -26,7 +26,7 @@ val targetTopBarHeights = mapOf(
     Screen.SavedVoixts to 100.dp,
     Screen.ArchivedVoixts to 100.dp,
     Screen.VoixtDrafts to 100.dp,
-    Screen.EditorScreen to 210.dp
+    Screen.EditorScreen to 160.dp
 )
 
 val targetTopBarIconSizes = mapOf(
@@ -47,12 +47,16 @@ val targetTopBarTextSizes = mapOf(
 
 val topBarAnimationDuration = 200
 
+/** This value is used to create a unique value for each
+ * navigation animation event*/
+private var navigationCounter = 0
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Navigation(
     navController: NavHostController,
     navState: Pair<Screen?, Screen?>,
-    setNavStateTo: (Screen) -> Unit
+    setNavStateTo: (Screen) -> Unit,
 ) {
     val currentTopBarHeight = getAnimatedTopBarHeight(navState)
     val currentTopBarIconSize = getAnimatedTopBarIconSize(navState)
@@ -68,7 +72,7 @@ fun Navigation(
     }, content = { padding ->
         NavHost(navController = navController, startDestination = Screen.HomeScreen.route) {
             composable(route = Screen.HomeScreen.route) {
-                LaunchedEffect(key1 = true, block = {
+                LaunchedEffect(key1 = navigationCounter++, block = {
                     setNavStateTo(Screen.HomeScreen)
                 })
                 HomeScreen(
@@ -76,28 +80,27 @@ fun Navigation(
                 )
             }
             composable(route = Screen.EditorScreen.route) {
-                LaunchedEffect(key1 = true, block = {
+                LaunchedEffect(key1 = navigationCounter++, block = {
                     setNavStateTo(Screen.EditorScreen)
                 })
-                EditScreen(
-                    withSelection = false,
+                EditorScreen(
+                    withSelection = true,
                     navController = navController,
                     modifier = Modifier.padding(padding)
                 )
             }
             composable(route = Screen.SavedVoixts.route) {
-                LaunchedEffect(key1 = true, block = {
+                LaunchedEffect(key1 = navigationCounter++, block = {
                     setNavStateTo(Screen.SavedVoixts)
                 })
                 VoixtListScreen(
                     navController = navController,
                     type = VoixtListType.SavedVoixts,
                     modifier = Modifier.padding(padding)
-
                 )
             }
             composable(route = Screen.VoixtDrafts.route) {
-                LaunchedEffect(key1 = true, block = {
+                LaunchedEffect(key1 = navigationCounter++, block = {
                     setNavStateTo(Screen.VoixtDrafts)
                 })
                 VoixtListScreen(
@@ -107,7 +110,7 @@ fun Navigation(
                 )
             }
             composable(route = Screen.ArchivedVoixts.route) {
-                LaunchedEffect(key1 = true, block = {
+                LaunchedEffect(key1 = navigationCounter++, block = {
                     setNavStateTo(Screen.ArchivedVoixts)
                 })
                 VoixtListScreen(
@@ -169,18 +172,6 @@ fun getAnimatedTopBarTextSize(navState: Pair<Screen?, Screen?>): Float {
         targetValue = targetTopBarTextSizes[navState.second]?.value ?: fallbackHeight,
         animationSpec = iconAnimation
     ).value
-}
-
-@Composable
-fun MyAnimatedVisibility(content: @Composable () -> Unit, visible: Boolean = false) {
-    AnimatedVisibility(
-        modifier = Modifier,
-        enter = fadeIn(initialAlpha = 0.0f, animationSpec = animatedSpecSpec),
-        visible = visible,
-        exit = fadeOut(targetAlpha = 0.0f, animationSpec = animateOutSpecSpec),
-    ) {
-        content()
-    }
 }
 
 val animatedSpecSpec = keyframes {

@@ -110,7 +110,7 @@ fun TopBar(
                 ),
                 textAlign = TextAlign.Left,
                 fontSize = currentTextSize,
-                fontWeight = FontWeight(400)
+                style = MaterialTheme.typography.headlineLarge
             )
             if (screen is Screen.HomeScreen) Spacer(modifier = Modifier.weight(1f))
         }
@@ -141,59 +141,48 @@ fun HomeScreenNavigationButtonsArea(navController: NavController) {
 }
 
 @Composable
-fun ColumnScope.HomeScreenSingleButtonRow(
+fun HomeScreenSingleButtonRow(
     modifier: Modifier = Modifier,
     navController: NavController,
     navToUri: String,
     displayString: String
 ) {
     Row(modifier = modifier) {
-        HomeScreenNavigationButton(
-            modifier = Modifier.weight(1f),
+        FullWidthButton(
             navController = navController,
             navToUri = navToUri,
             displayString = displayString,
-            fontSize = 30.sp,
-            textAlign = TextAlign.Left
         )
     }
 }
 
 @Composable
-fun ColumnScope.HomeScreenTwoButtonRow(
+fun HomeScreenTwoButtonRow(
     modifier: Modifier = Modifier, navController: NavController
 ) {
     Row(modifier = modifier) {
-        HomeScreenNavigationButton(
-            modifier = Modifier.weight(1f),
+        HalfWidthButton(
             navController = navController,
             navToUri = Screen.VoixtDrafts.route,
             displayString = stringResource(id = R.string.voixt_drafts_screen),
-            fontSize = 20.sp,
-            textAlign = TextAlign.Center
-        )
-        HomeScreenNavigationButton(
-            modifier = Modifier.weight(1f),
+
+            )
+        HalfWidthButton(
             navController = navController,
             navToUri = Screen.ArchivedVoixts.route,
             displayString = stringResource(id = R.string.archived_voixts_screen),
-            fontSize = 20.sp,
-            textAlign = TextAlign.Center
         )
     }
 }
 
 @Composable
-fun RowScope.HomeScreenNavigationButton(
-    modifier: Modifier = Modifier,
+fun RowScope.FullWidthButton(
     navController: NavController,
     navToUri: String,
     displayString: String,
-    fontSize: TextUnit,
-    textAlign: TextAlign,
 ) {
     Button(
-        modifier = modifier
+        modifier = Modifier
             .weight(1f)
             .fillMaxSize()
             .padding(paddingBetweenRowsAndButtons)
@@ -224,10 +213,78 @@ fun RowScope.HomeScreenNavigationButton(
                 modifier = Modifier
                     .weight(1.5f)
                     .align(Alignment.CenterVertically),
-                fontSize = fontSize,
+                fontSize = 30.sp,
                 fontWeight = FontWeight(250),
-                textAlign = textAlign
+                textAlign = TextAlign.Left,
             )
+        }
+    }
+}
+
+@Composable
+fun RowScope.HalfWidthButton(
+    navController: NavController,
+    navToUri: String,
+    displayString: String,
+) {
+    Button(
+        modifier = Modifier
+            .weight(1f)
+            .fillMaxSize()
+            .padding(paddingBetweenRowsAndButtons)
+            .background(shape = buttonShape, brush = gradientColorForButtons),
+        onClick = {
+            navController.navigate(navToUri)
+        },
+        shape = buttonShape,
+        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+    ) {
+        val painterResource = when (navToUri) {
+            Screen.EditorScreen.route -> painterResource(R.drawable.new_voixt_button_icon)
+            Screen.SavedVoixts.route -> painterResource(R.drawable.saved_voixts_button_icon)
+            Screen.ArchivedVoixts.route -> painterResource(R.drawable.archived_voixts_button_icon_svg)
+            else -> painterResource(R.drawable.voixt_drafts_button_icon)
+        }
+
+        Box {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize()
+            ) {
+                Text(
+                    text = displayString,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(bottom = 10.dp),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight(250),
+                    textAlign = TextAlign.Center
+                )
+                Image(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(top = 10.dp),
+                    painter = painterResource,
+                    contentDescription = ""
+                )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun previewHalfButton() {
+    VoixtTheme {
+        Row {
+            val navController = rememberNavController()
+            HalfWidthButton(
+                navController = navController,
+                navToUri = Screen.VoixtDrafts.route,
+                displayString = stringResource(id = R.string.voixt_drafts_screen),
+
+                )
         }
     }
 }
