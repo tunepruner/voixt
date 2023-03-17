@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tunepruner.voixt.R
 import com.tunepruner.voixt.ui.theme.VoixtTheme
+import com.tunepruner.voixt.ui.theme.textBoat
 
 @Composable
 fun TextRow(withSelection: Boolean, stringContent: List<String>) {
@@ -69,15 +70,11 @@ fun RowScope.TextSubRow(stringContent: List<String>, modifier: Modifier = Modifi
             ) {
                 Text(
                     text = "$item ",
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        fontFamily = FontFamily(Font(R.font.courier_prime_regular))
-                    ),
+                    style = MaterialTheme.typography.textBoat,
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
                         .width(50.dp)
                         .padding(vertical = 5.dp, horizontal = 10.dp),
-                    color = MaterialTheme.colorScheme.onPrimary,
                 )
             }
         }
