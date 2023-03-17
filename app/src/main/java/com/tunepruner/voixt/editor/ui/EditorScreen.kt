@@ -1,89 +1,55 @@
 package com.tunepruner.voixt.editor.ui
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-
+import androidx.navigation.compose.rememberNavController
+import com.tunepruner.voixt.ui.theme.VoixtTheme
 
 @Composable
-fun EditScreen(withSelection: Boolean, navController: NavController, modifier: Modifier = Modifier) {
+fun EditorScreen(
+    withSelection: Boolean, navController: NavController, modifier: Modifier = Modifier
+) {
+    val viewModel = null//TODO()
+
+    val strings: MutableState<List<String>> = remember {
+        mutableStateOf(arrayListOf("These", "are", "the", /*"initial", */"strings!"))
+    }
+
     Column(
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-        modifier = modifier
-            .fillMaxSize()
+        verticalArrangement = Arrangement.spacedBy(10.dp), modifier = modifier.fillMaxSize()
     ) {
-        Level(withSelection)
+        ContentLevel(withSelection, strings.value)
         ControlPanel(withSelection)
-        Level(withSelection)
+        ContentLevel(withSelection, strings.value)
     }
 }
 
 @Composable
-fun Level(withSelection: Boolean) {
+fun ContentLevel(withSelection: Boolean, stringContent: List<String>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .size(height = 110.dp, width = 0.dp)
-            .background(color = Color(0x00000000))
+            .background(color = MaterialTheme.colorScheme.tertiary)
     ) {
         AudioRow(withSelection = withSelection)
-        TextRow(withSelection = withSelection)
+        TextRow(withSelection = withSelection, stringContent = stringContent)
     }
 }
 
-@SuppressLint("UnrememberedMutableState")
+@Preview
 @Composable
-fun TextRow(withSelection: Boolean) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .size(height = 50.dp, width = 0.dp)
-            .background(color = Color(0x00000000))
-    ) {
-        val strings: MutableState<List<String>> = mutableStateOf(ArrayList())
-
-        strings.value =
-            strings.value.plus(arrayListOf("These", "are", "the", "initial", "strings!"))
-
-        for (item in strings.value) {
-            Box(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .clip(shape = RoundedCornerShape(15.dp))
-                    .background(color = MaterialTheme.colorScheme.primary)
-            ) {
-                Text(
-                    text = "$item ",
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(vertical = 5.dp, horizontal = 10.dp),
-                    color = MaterialTheme.colorScheme.onPrimary,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun AudioRow(withSelection: Boolean) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .size(height = 50.dp, width = 0.dp)
-            .background(color = MaterialTheme.colorScheme.secondary)
-    ) {
-
+fun EditorScreenPreview() {
+    VoixtTheme {
+        EditorScreen(withSelection = true, navController = rememberNavController())
     }
 }
