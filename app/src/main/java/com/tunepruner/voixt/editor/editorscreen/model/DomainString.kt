@@ -1,13 +1,15 @@
 package com.tunepruner.voixt.editor.editorscreen.model
 
+import android.text.SpannableStringBuilder
+import com.tunepruner.voixt.editor.util.StringLengthResolver
 
 class DomainString(
-    val string: String,
-    val dpWidth: Int,
-    val spaceAfter: Boolean,
+    val richString: SpannableStringBuilder,
+    val dpWidth: Int = StringLengthResolver.resolveStringToDp(richString.toString()),
+    val spaceAfter: Boolean = true /*TODO replace this with real logic*/,
     val filters: List<TextFilter>? = null
 )
 
 fun String.toDomainString(): DomainString {
-    return DomainString(string = this, dpWidth = 0/*TODO*/, spaceAfter = false/*TODO*/)
+    return DomainString(richString = SpannableStringBuilder(this))
 }

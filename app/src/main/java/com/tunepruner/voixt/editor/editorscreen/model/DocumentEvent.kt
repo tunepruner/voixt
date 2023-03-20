@@ -1,44 +1,38 @@
 package com.tunepruner.voixt.editor.editorscreen.model
 
-class DocumentEvent(
-    val documentEventType: DocumentEventType,
-    val affectedWords: List<String>,
-    val index: Int? = null,
-)
-
-sealed class DocumentEventTransitional(
+sealed class DocumentEvent(
     val startingIndex: Int? = null,
-    val strings: List<DomainStringTransitional>? = null,
+    val strings: List<DomainString>? = null,
 ) {
 
     class Initialization(
-        val stringsToAdd: List<DomainStringTransitional>,
-    ) : DocumentEventTransitional(startingIndex = 0, strings = stringsToAdd)
+        val stringsToAdd: List<DomainString>,
+    ) : DocumentEvent(startingIndex = 0, strings = stringsToAdd)
 
     class Insertion(
         val insertionIndex: Int,
-        val stringsToAdd: List<DomainStringTransitional>,
-    ) : DocumentEventTransitional(startingIndex = insertionIndex, strings = stringsToAdd)
+        val stringsToAdd: List<DomainString>,
+    ) : DocumentEvent(startingIndex = insertionIndex, strings = stringsToAdd)
 
     class Deletion(
         val deletionStartIndex: Int,
-        val stringsToRemove: List<DomainStringTransitional>
-    ) : DocumentEventTransitional(startingIndex = deletionStartIndex, strings = stringsToRemove)
+        val stringsToRemove: List<DomainString>
+    ) : DocumentEvent(startingIndex = deletionStartIndex, strings = stringsToRemove)
 
     class FilterAddition(
         val filterStartIndex: Int,
-        val stringsToReceiveFilter: List<DomainStringTransitional>,
+        val stringsToReceiveFilter: List<DomainString>,
         val filterToApply: TextFilter,
-    ) : DocumentEventTransitional(startingIndex = filterStartIndex, strings = stringsToReceiveFilter)
+    ) : DocumentEvent(startingIndex = filterStartIndex, strings = stringsToReceiveFilter)
 
     /** This event should be triggered whenever one or more of the DomainStrings
      * being passed in already has a given filter. Otherwise, [FilterAddition] should
      * be triggered. */
     class FilterRemoval(
         val filterStartIndex: Int,
-        val stringsToRemoveFilterFrom: List<DomainStringTransitional>,
+        val stringsToRemoveFilterFrom: List<DomainString>,
         val filterToRemove: TextFilter
-    ) : DocumentEventTransitional(startingIndex = filterStartIndex, strings = stringsToRemoveFilterFrom)
+    ) : DocumentEvent(startingIndex = filterStartIndex, strings = stringsToRemoveFilterFrom)
 
     /**This event should be triggered for events that require multiple events at once.
      *
@@ -46,13 +40,13 @@ sealed class DocumentEventTransitional(
      * in as separate words, but applying the hyphenation requires removing those \
      * words (They'll be DomainString objects), and then putting them back,
      * but with a "-" added in between each pair, as a DomainString. */
-    class Composite(val listOfEvents: List<DocumentEventTransitional>) : DocumentEventTransitional()
+    class Composite(val listOfEvents: List<DocumentEvent>) : DocumentEvent()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || this::class != other::class) return false
 
-        other as DocumentEventTransitional
+        other as DocumentEvent
 
         if (this.javaClass != other.javaClass) return false
         if (this.startingIndex != other.startingIndex) return false
