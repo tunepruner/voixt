@@ -1,13 +1,15 @@
 package com.tunepruner.voixt.editor.editorscreen.domain
 
+import android.graphics.Typeface
+import android.text.Spanned
+import android.text.style.UnderlineSpan
 import com.tunepruner.voixt.editor.editorscreen.model.DocumentEvent
-import com.tunepruner.voixt.editor.editorscreen.model.DocumentEventType
+import com.tunepruner.voixt.editor.editorscreen.model.DomainString
+import com.tunepruner.voixt.editor.editorscreen.model.TextFilter
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-
-const val TAG = "12345"
 
 val DUMMY_TEXT = """
     This is the first list of strings that we will use to populate the UI. 
@@ -16,7 +18,7 @@ val DUMMY_TEXT = """
     in the future, we will find better text to display. 
 """.trimIndent()
 
-class DocumentHistoryManager(val editorController: EditorController) {
+class DocumentHistoryManager {
     private val undoStack = ArrayDeque<DocumentEvent>()
     private val redoStack = ArrayDeque<DocumentEvent>()
 
@@ -32,40 +34,112 @@ class DocumentHistoryManager(val editorController: EditorController) {
      * bugs from deteriorating the user experience too quickly. Even more
      * importantly, it gives us something to test against to ensure those
      * bugs don't happen. */
-    private val _backupTextBodyState = MutableStateFlow(ArrayList<String>())
-    val backupTextBodyState: StateFlow<List<String>> = _backupTextBodyState
+    private val _backupTextBodyState = MutableStateFlow(ArrayList<DomainString>())
+    val backupTextBodyState: StateFlow<List<DomainString>> = _backupTextBodyState
 
-    private val _documentEvents: MutableSharedFlow<DocumentEvent> = MutableSharedFlow()
+    private val _documentEvents: MutableSharedFlow<DocumentEvent> =
+        MutableSharedFlow(replay = Int.MAX_VALUE)
     val documentEvents: SharedFlow<DocumentEvent> = _documentEvents
 
-
-    suspend fun initialize(words: List<String>) {
-        edit(0, words, DocumentEventType.INITIALIZE)
+    suspend fun initialize(words: List<DomainString>) {
+        sendEditEvent(DocumentEvent.Initialization(words))
     }
 
-    suspend fun add(words: List<String>, index: Int? = null) {
-        edit(index ?: _backupTextBodyState.value.size, words, DocumentEventType.ADD)
-    }
-
-    suspend fun remove(index: Int, words: List<String>) {
-        edit(index, words, DocumentEventType.REMOVE)
-    }
-
-    private suspend fun edit(index: Int, words: List<String>, type: DocumentEventType) {
-        redoStack.clear()
-        val newEvent = DocumentEvent(
-            affectedWords = words,
-            documentEventType = type,
-            index = index,
+    suspend fun add(words: List<DomainString>, index: Int? = null) {
+        sendEditEvent(
+            DocumentEvent.Insertion(
+                stringsToAdd = words,
+                insertionIndex = index ?: backupTextBodyState.value.size
+            )
         )
+    }
+
+    suspend fun remove(index: Int, words: List<DomainString>) {
+        sendEditEvent(
+            DocumentEvent.Deletion(
+                stringsToRemove = words, deletionStartIndex = index
+            )
+        )
+    }
+
+    suspend fun applyFilter(
+        filter: TextFilter,
+        startingIndex: Int,
+        words: List<DomainString>
+    ) {
+        sendEditEvent(
+            DocumentEvent.FilterAddition(
+                filterStartIndex = startingIndex,
+                stringsToReceiveFilter = words,
+                filterToApply = filter
+            )
+        )
+    }
+
+    suspend fun removeFilter(filter: TextFilter, from: Int, words: List<DomainString>) {
+        sendEditEvent(
+            DocumentEvent.FilterRemoval(
+                filterStartIndex = from,
+                stringsToRemoveFilterFrom = words,
+                filterToRemove = filter
+            )
+        )
+    }
+/*
+    suspend fun applyParentheses(from: Int, words: List<String>) {
+        TODO()
+        sendEditEvent(
+            DocumentEvent.Composite(
+
+            )
+        )
+    }
+
+    suspend fun applyQuotationMarks(from: Int, words: List<String>) {
+        TODO()
+        sendEditEvent(
+            DocumentEvent.Composite(
+
+            )
+        )
+    }
+
+    suspend fun applyAllCaps(from: Int, words: List<String>) {
+        TODO()
+        sendEditEvent(
+            DocumentEvent.Composite(
+
+            )
+        )
+    }
+
+    suspend fun applySentenceCaps(from: Int, words: List<String>) {
+        TODO()
+        sendEditEvent(
+            DocumentEvent.Composite(
+
+            )
+        )
+    }
+
+    suspend fun applyHyphenation(from: Int, words: List<String>) {
+        TODO()
+        sendEditEvent(
+            DocumentEvent.Composite(
+
+            )
+        )
+    }
+
+*/
+
+    private suspend fun sendEditEvent(event: DocumentEvent) {
+        redoStack.clear()
+        val newEvent = event
         undoStack.add(newEvent)
         editStack.add(newEvent)
-        _documentEvents.emit(
-            newEvent
-        )
-        _backupTextBodyState.emit(
-            ArrayList(compileListFromEditStack())
-        )
+        _documentEvents.emit(newEvent)
+        _backupTextBodyState.emit(ArrayList(compileListFromEditStack()))
     }
 
     suspend fun undo() {
@@ -73,19 +147,15 @@ class DocumentHistoryManager(val editorController: EditorController) {
         undoStack.removeLast()
         redoStack.add(undoItem)
         editStack.remove(undoItem)
-        _documentEvents.emit(
-            DocumentEvent(
-                affectedWords = undoItem.affectedWords,
-                documentEventType = when (undoItem.documentEventType) {
-                    DocumentEventType.REMOVE -> DocumentEventType.ADD
-                    else -> DocumentEventType.REMOVE
-                },
-                index = undoItem.index,
-            )
-        )
-        _backupTextBodyState.emit(
-            ArrayList(compileListFromEditStack())
-        )
+
+        // We create a reversed version of whatever
+        // event the user wants undone.
+        // We do not put this reversal in the edit
+        // stack, but we DO emit it to the UI as if it
+        // were a normal event so that animations can
+        // work as expected.
+        _documentEvents.emit(undoItem.createReverseEvent())
+        _backupTextBodyState.emit(ArrayList(compileListFromEditStack()))
     }
 
     suspend fun redo() {
@@ -93,28 +163,107 @@ class DocumentHistoryManager(val editorController: EditorController) {
         redoStack.removeLast()
         undoStack.add(redoItem)
         editStack.add(redoItem)
-        _documentEvents.emit(
-            DocumentEvent(
-                affectedWords = redoItem.affectedWords,
-                documentEventType = redoItem.documentEventType,
-                index = redoItem.index,
-            )
-        )
-        _backupTextBodyState.emit(
-            ArrayList(compileListFromEditStack())
-        )
+        _documentEvents.emit(redoItem)
+        _backupTextBodyState.emit(ArrayList(compileListFromEditStack()))
     }
 
-    fun compileListFromEditStack(): List<String> {
-        return editStack.fold(ArrayList()) { acc, wordEvent ->
-            for (word in wordEvent.affectedWords.withIndex()) {
-                if (wordEvent.documentEventType == DocumentEventType.REMOVE) {
-                    acc.remove(word.value)
-                } else {
-                    acc.add((wordEvent.index ?: 0) + word.index, word.value)
+    fun compileListFromEditStack(): List<DomainString> {
+        return editStack.fold(ArrayList()) { acc, event ->
+            event.strings?.map { it.richString }?.let { eventStrings ->
+                val firstIndex = event.startingIndex ?: 0
+                val lastIndex = firstIndex + event.strings.lastIndex
+                for (eventStringMember in eventStrings.withIndex()) {
+                    val editIndex = firstIndex + eventStringMember.index
+                    when (event) {
+                        is DocumentEvent.Insertion, is DocumentEvent.Initialization -> {
+                            acc.add(
+                                editIndex,
+                                DomainString(eventStringMember.value)
+                            )
+                        }
+                        is DocumentEvent.Deletion -> {
+                            acc.removeAt(editIndex)
+                        }
+                        is DocumentEvent.FilterAddition -> {
+                            val builder = acc[editIndex].richString
+                            when (event.filterToApply) {
+                                is TextFilter.Italics -> builder.setSpan(
+                                    Typeface.ITALIC,
+                                    firstIndex,
+                                    lastIndex,
+                                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                                )
+                                is TextFilter.Bold -> builder.setSpan(
+                                    Typeface.BOLD,
+                                    firstIndex,
+                                    lastIndex,
+                                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                                )
+                                is TextFilter.Underline -> builder.setSpan(
+                                    UnderlineSpan(),
+                                    firstIndex,
+                                    lastIndex,
+                                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                                )
+                                is TextFilter.AllCapitalized ->
+                                    builder.forEachIndexed { replaceIndex, char ->
+                                        builder.replace(
+                                            replaceIndex,
+                                            replaceIndex,
+                                            { char.uppercase() }.toString()
+                                        )
+                                    }
+                                is TextFilter.SentenceCase -> builder.toString()
+                                    .replaceFirstChar { it.uppercase() }
+                            }
+                        }
+                        is DocumentEvent.FilterRemoval -> {
+                            TODO()
+                        }
+                        is DocumentEvent.Composite -> {
+                            TODO()
+                        }
+                    }
                 }
             }
             acc
+        }
+    }
+}
+
+fun DocumentEvent.createReverseEvent(): DocumentEvent {
+    return when (this) {
+        is DocumentEvent.Initialization -> {
+            this
+        }
+        is DocumentEvent.FilterAddition -> {
+            DocumentEvent.FilterRemoval(
+                filterStartIndex = this.filterStartIndex,
+                stringsToRemoveFilterFrom = this.stringsToReceiveFilter,
+                filterToRemove = this.filterToApply,
+            )
+        }
+        is DocumentEvent.FilterRemoval -> {
+            DocumentEvent.FilterAddition(
+                filterStartIndex = this.filterStartIndex,
+                stringsToReceiveFilter = this.stringsToRemoveFilterFrom,
+                filterToApply = this.filterToRemove,
+            )
+        }
+        is DocumentEvent.Insertion -> {
+            DocumentEvent.Deletion(
+                deletionStartIndex = this.insertionIndex,
+                stringsToRemove = this.stringsToAdd,
+            )
+        }
+        is DocumentEvent.Deletion -> {
+            DocumentEvent.Insertion(
+                insertionIndex = this.deletionStartIndex,
+                stringsToAdd = this.stringsToRemove,
+            )
+        }
+        is DocumentEvent.Composite -> {
+            DocumentEvent.Composite(listOfEvents = this.listOfEvents.map { it.createReverseEvent() })
         }
     }
 }

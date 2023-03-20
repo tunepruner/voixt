@@ -1,8 +1,10 @@
 package com.tunepruner.voixt.editor.util
 
-fun List<String>.concatenateToOneString(): String {
+import android.text.SpannableStringBuilder
+
+fun List<SpannableStringBuilder>.concatenateToOneString(): String {
     val builder = StringBuilder()
-    return fold(builder) { acc, string ->
+    return this.map { it.chars() }.fold(builder) { acc, string ->
         acc.append("$string ")
     }.toString()
 }
