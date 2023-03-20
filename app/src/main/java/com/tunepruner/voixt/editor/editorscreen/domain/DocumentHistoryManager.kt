@@ -9,14 +9,14 @@ import kotlinx.coroutines.flow.StateFlow
 
 const val TAG = "12345"
 
-val DUMMY_TEXT = """
-    This is the first list of strings that we will use to populate the UI. 
-    I hope it will be long enough to fill the who UI. Let's try to repeat 
-    as many ideas as possible so that we achieve that objective, and then, 
-    in the future, we will find better text to display. 
-""".trimIndent()
+//val DUMMY_TEXT = """
+//    This is the first list of strings that we will use to populate the UI.
+//    I hope it will be long enough to fill the who UI. Let's try to repeat
+//    as many ideas as possible so that we achieve that objective, and then,
+//    in the future, we will find better text to display.
+//""".trimIndent()
 
-class DocumentHistoryManager(val editorController: EditorController) {
+class DocumentHistoryManager() {
     private val undoStack = ArrayDeque<DocumentEvent>()
     private val redoStack = ArrayDeque<DocumentEvent>()
 
@@ -35,9 +35,9 @@ class DocumentHistoryManager(val editorController: EditorController) {
     private val _backupTextBodyState = MutableStateFlow(ArrayList<String>())
     val backupTextBodyState: StateFlow<List<String>> = _backupTextBodyState
 
-    private val _documentEvents: MutableSharedFlow<DocumentEvent> = MutableSharedFlow()
+    private val _documentEvents: MutableSharedFlow<DocumentEvent> =
+        MutableSharedFlow(replay = Int.MAX_VALUE)
     val documentEvents: SharedFlow<DocumentEvent> = _documentEvents
-
 
     suspend fun initialize(words: List<String>) {
         edit(0, words, DocumentEventType.INITIALIZE)
@@ -49,6 +49,10 @@ class DocumentHistoryManager(val editorController: EditorController) {
 
     suspend fun remove(index: Int, words: List<String>) {
         edit(index, words, DocumentEventType.REMOVE)
+    }
+
+    suspend fun hyphenate(from: Int, words: List<String>) {
+        edit(from, words, DocumentEventType.COMPOSITE)
     }
 
     private suspend fun edit(index: Int, words: List<String>, type: DocumentEventType) {
@@ -108,10 +112,16 @@ class DocumentHistoryManager(val editorController: EditorController) {
     fun compileListFromEditStack(): List<String> {
         return editStack.fold(ArrayList()) { acc, wordEvent ->
             for (word in wordEvent.affectedWords.withIndex()) {
-                if (wordEvent.documentEventType == DocumentEventType.REMOVE) {
-                    acc.remove(word.value)
-                } else {
-                    acc.add((wordEvent.index ?: 0) + word.index, word.value)
+                when (wordEvent.documentEventType) {
+                    DocumentEventType.ADD, DocumentEventType.INITIALIZE -> {
+                        acc.add((wordEvent.index ?: 0) + word.index, word.value)
+                    }
+                    DocumentEventType.REMOVE -> {
+                        acc.remove(word.value)
+                    }
+                    DocumentEventType.COMPOSITE -> {
+                        TODO()
+                    }
                 }
             }
             acc

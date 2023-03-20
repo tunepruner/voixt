@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import com.tunepruner.voixt.editor.editorscreen.model.DocumentEvent
 import kotlinx.coroutines.flow.*
 
-class EditorScreenViewModel(editorController: EditorController) : ViewModel() {
-    private val documentHistoryManager = DocumentHistoryManager(editorController)
+class EditorScreenViewModel(val editorController: EditorController) : ViewModel() {
+//    private val cursorStateViewModel = CursorViewModel()
+//    private val scrollStateViewModel = ScrollStateViewModel()
+    private val documentHistoryManager = DocumentHistoryManager()
     val documentEvents: SharedFlow<DocumentEvent> = documentHistoryManager.documentEvents
 
     suspend fun initialize(words: List<String>) = documentHistoryManager.initialize(words)

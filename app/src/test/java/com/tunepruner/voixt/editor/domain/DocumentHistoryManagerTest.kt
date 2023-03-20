@@ -2,7 +2,7 @@ package com.tunepruner.voixt.editor.domain
 
 import com.tunepruner.voixt.editor.editorscreen.domain.DUMMY_TEXT
 import com.tunepruner.voixt.editor.editorscreen.domain.DocumentHistoryManager
-import com.tunepruner.voixt.editor.editorscreen.domain.EditorController
+import com.tunepruner.voixt.editor.util.concatenateToOneStringLegacy
 import com.tunepruner.voixt.editor.util.concatenateToOneString
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -14,7 +14,7 @@ import org.junit.Before
 import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class DocumentHistoryManagerTest {
-    private val _sut = DocumentHistoryManager(EditorController())
+    private val _sut = DocumentHistoryManager()
 
     @OptIn(DelicateCoroutinesApi::class)
     private val mainThreadSurrogate = newSingleThreadContext("UI thread")
@@ -43,7 +43,7 @@ internal class DocumentHistoryManagerTest {
     fun `add word and test against backup`() = runTest {
         _sut.initialize(DUMMY_TEXT.split(' '))
         _sut.add(listOf("ADDED", "WORDS"), 5)
-        println(_sut.compileListFromEditStack().concatenateToOneString())
+        println(_sut.compileListFromEditStack().concatenateToOneStringLegacy())
         assert(_sut.compileListFromEditStack().size == _sut.backupTextBodyState.value.size)
     }
 
@@ -61,8 +61,8 @@ internal class DocumentHistoryManagerTest {
         _sut.initialize(DUMMY_TEXT.split(' '))
         val wordsToRemove = _sut.backupTextBodyState.value.subList(5, 7)
         _sut.remove(5, wordsToRemove)
-        println(_sut.compileListFromEditStack().concatenateToOneString())
-        println(wordsToRemove.concatenateToOneString())
+        println(_sut.compileListFromEditStack().concatenateToOneStringLegacy())
+        println(wordsToRemove.concatenateToOneStringLegacy())
         assert(_sut.compileListFromEditStack().size == _sut.backupTextBodyState.value.size)
     }
 
@@ -183,8 +183,8 @@ internal class DocumentHistoryManagerTest {
         _sut.redo()
         println(backup)
         println(compiled)
-        println(_sut.backupTextBodyState.value.concatenateToOneString())
-        println(_sut.compileListFromEditStack().concatenateToOneString())
+        println(_sut.backupTextBodyState.value.concatenateToOneStringLegacy())
+        println(_sut.compileListFromEditStack().concatenateToOneStringLegacy())
         _sut.backupTextBodyState.value.forEachIndexed { index, item -> assert(item.contentEquals(backup[index])) }
         _sut.compileListFromEditStack().forEachIndexed { index, item -> assert(item.contentEquals(compiled[index])) }
     }
@@ -192,34 +192,34 @@ internal class DocumentHistoryManagerTest {
     @Test
     fun `Testing with concatenation 1`() = runTest {
         _sut.initialize(arrayListOf())
-        println("Initialized: " + _sut.backupTextBodyState.value.concatenateToOneString())
-        println("Initialized: " + _sut.compileListFromEditStack().concatenateToOneString())
+        println("Initialized: " + _sut.backupTextBodyState.value.concatenateToOneStringLegacy())
+        println("Initialized: " + _sut.compileListFromEditStack().concatenateToOneStringLegacy())
         _sut.add(arrayListOf("One"))
-        println("Added \"One\": " + _sut.backupTextBodyState.value.concatenateToOneString())
-        println("Added \"One\": " + _sut.compileListFromEditStack().concatenateToOneString())
+        println("Added \"One\": " + _sut.backupTextBodyState.value.concatenateToOneStringLegacy())
+        println("Added \"One\": " + _sut.compileListFromEditStack().concatenateToOneStringLegacy())
         _sut.add(arrayListOf("Two"))
-        println("Added \"Two\": " + _sut.backupTextBodyState.value.concatenateToOneString())
-        println("Added \"Two\": " + _sut.compileListFromEditStack().concatenateToOneString())
+        println("Added \"Two\": " + _sut.backupTextBodyState.value.concatenateToOneStringLegacy())
+        println("Added \"Two\": " + _sut.compileListFromEditStack().concatenateToOneStringLegacy())
         _sut.add(arrayListOf("Three"))
-        println("Added \"Three\": " + _sut.backupTextBodyState.value.concatenateToOneString())
-        println("Added \"Three\": " + _sut.compileListFromEditStack().concatenateToOneString())
+        println("Added \"Three\": " + _sut.backupTextBodyState.value.concatenateToOneStringLegacy())
+        println("Added \"Three\": " + _sut.compileListFromEditStack().concatenateToOneStringLegacy())
         _sut.undo()
-        println("Undo once: " + _sut.backupTextBodyState.value.concatenateToOneString())
-        println("Undo once: " + _sut.compileListFromEditStack().concatenateToOneString())
+        println("Undo once: " + _sut.backupTextBodyState.value.concatenateToOneStringLegacy())
+        println("Undo once: " + _sut.compileListFromEditStack().concatenateToOneStringLegacy())
         _sut.undo()
-        println("Undo twice: " + _sut.backupTextBodyState.value.concatenateToOneString())
-        println("Undo twice: " + _sut.compileListFromEditStack().concatenateToOneString())
+        println("Undo twice: " + _sut.backupTextBodyState.value.concatenateToOneStringLegacy())
+        println("Undo twice: " + _sut.compileListFromEditStack().concatenateToOneStringLegacy())
         _sut.undo()
-        println("Undo three times: " + _sut.backupTextBodyState.value.concatenateToOneString())
-        println("Undo three times: " + _sut.compileListFromEditStack().concatenateToOneString())
+        println("Undo three times: " + _sut.backupTextBodyState.value.concatenateToOneStringLegacy())
+        println("Undo three times: " + _sut.compileListFromEditStack().concatenateToOneStringLegacy())
         _sut.redo()
-        println("Redo once: " + _sut.backupTextBodyState.value.concatenateToOneString())
-        println("Redo once: " + _sut.compileListFromEditStack().concatenateToOneString())
+        println("Redo once: " + _sut.backupTextBodyState.value.concatenateToOneStringLegacy())
+        println("Redo once: " + _sut.compileListFromEditStack().concatenateToOneStringLegacy())
         _sut.redo()
-        println("Redo twice: " + _sut.backupTextBodyState.value.concatenateToOneString())
-        println("Redo twice: " + _sut.compileListFromEditStack().concatenateToOneString())
+        println("Redo twice: " + _sut.backupTextBodyState.value.concatenateToOneStringLegacy())
+        println("Redo twice: " + _sut.compileListFromEditStack().concatenateToOneStringLegacy())
         _sut.add(arrayListOf("thr33", "f4or", "fiv5"))
-        println("Final edit: " + _sut.backupTextBodyState.value.concatenateToOneString())
-        println("Final edit: " + _sut.compileListFromEditStack().concatenateToOneString())
+        println("Final edit: " + _sut.backupTextBodyState.value.concatenateToOneStringLegacy())
+        println("Final edit: " + _sut.compileListFromEditStack().concatenateToOneStringLegacy())
     }
 }
